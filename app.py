@@ -37,7 +37,7 @@ def stem(text):
     return " ".join(y)
 
 def fetch_poster(movie_title):
-    url = f"https://api.themoviedb.org/3/search/movie?api_key={apikey}&query={movie_title}"
+    url = f"https://api.themoviedb.org/3/search/movie?api_key={api_key}&query={movie_title}"
     response = requests.get(url)
     data = response.json()
     
@@ -55,8 +55,7 @@ def recommend(query, top_n=5):
     sim = cosine_similarity(data, similar).flatten()
     top_indices = sim.argsort()[-top_n:][::-1]
     return movies.iloc[top_indices]['title'].tolist()
-    
-print(recommend("fantasy danielRadcliffe"))
+
 
 
 # # taking input
@@ -89,6 +88,3 @@ if st.button("Recommend"):
     with col5:
         st.text(titles[4])
         st.image(posters_path[4])              
-
-
-
