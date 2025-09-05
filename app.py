@@ -8,10 +8,12 @@ import nltk
 from nltk.stem.porter import PorterStemmer
 import os
 import requests
+from dotenv import load_dotenv
 
 
 # DATA
-apikey = "ff526b0160e62f1c6091c7428704fed5"
+load_dotenv()
+api_key = os.getenv("apikey")
 cv = CountVectorizer(max_features = 5000, stop_words = 'english')
 mov = pickle.load(open("movies_details.pkl", "rb"))
 movies = pd.DataFrame(mov)
