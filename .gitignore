@@ -1,3 +1,5 @@
 .env
 movies_details.pkl
 vectors.pkl
+
+myenv
