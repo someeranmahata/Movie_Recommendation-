@@ -19,7 +19,7 @@ mov = pickle.load(open("movies_details.pkl", "rb"))
 movies = pd.DataFrame(mov)
 
 vectors = cv.fit_transform(movies['tags']).toarray()
-similar = pickle.load(open("vectors.pkl", "rb"))
+#similar = pickle.load(open("vectors.pkl", "rb"))
 
 # CHECK
 # print(movies[movies['title'] == 'The Avengers'].index[0])
@@ -52,7 +52,7 @@ def recommend(query, top_n=5):
     query = query.lower()
     user_ch = stem(query)
     data = cv.transform([user_ch])
-    sim = cosine_similarity(data, similar).flatten()
+    sim = cosine_similarity(data, vectors).flatten()
     top_indices = sim.argsort()[-top_n:][::-1]
     return movies.iloc[top_indices]['title'].tolist()
 
