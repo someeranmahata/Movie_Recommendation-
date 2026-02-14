@@ -13,13 +13,10 @@ import streamlit as st
 
 # DATA
 load_dotenv()
-
-# DATA
-api_key = st.secrets["apikey"]
+api_key = "ff526b0160e62f1c6091c7428704fed5"
 cv = CountVectorizer(max_features = 5000, stop_words = 'english')
 mov = pickle.load(open("movies_details.pkl", "rb"))
 movies = pd.DataFrame(mov)
-
 
 vectors = cv.fit_transform(movies['tags']).toarray()
 #similar = pickle.load(open("vectors.pkl", "rb"))   
