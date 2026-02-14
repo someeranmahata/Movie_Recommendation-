@@ -1,5 +1,4 @@
 import pickle
-# import streamlit as st
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
@@ -10,9 +9,7 @@ import os
 import requests
 from dotenv import load_dotenv
 from flask import Flask, render_template, request
-
-
-
+import streamlit as st
 
 # DATA
 load_dotenv()
@@ -23,10 +20,6 @@ movies = pd.DataFrame(mov)
 
 vectors = cv.fit_transform(movies['tags']).toarray()
 #similar = pickle.load(open("vectors.pkl", "rb"))   
-
-# CHECK
-print(movies.head(0))
-
 
 
 # # methods
@@ -59,43 +52,43 @@ def recommend(query, top_n=5):
 
 
 
+
+
 # # taking input
-# st.title('MOVIES RECOMMENDATION')
-# st.text("(You can mention any Movie/Actors or Directors)")
 
-# select_input = st.text_input("Enter the type of movie you want to watch : ")
-# st.text("NOTE : if you are mentioning actors name write it wthout space saperated")
+st.title('MOVIES RECOMMENDATION')
+st.text("(You can mention any Movie/Actors or Directors)")
 
-# if st.button("Recommend"):
-#     titles = recommend(select_input)
+select_input = st.text_input("Enter the type of movie you want to watch : ")
+st.text("NOTE : if you are mentioning actors name write it wthout space saperated")
 
-#     col1, col2, col3, col4, col5 = st.columns(5)
-#     with col1:
-#         st.text(titles[0])
-        
-#     with col2:
-#         st.text(titles[1])
-#     with col3:
-#         st.text(titles[2])
-#     with col4:
-#         st.text(titles[3])
-#     with col5:
-#         st.text(titles[4])
+if st.button("Recommend"):
+    titles = recommend(select_input)
 
-app = Flask(__name__)
+    col1, col2, col3, col4, col5 = st.columns(5)
+    cols = [col1, col2, col3, col4, col5]
 
-@app.route("/", methods=["GET", "POST"])
-def index():
-    output = None
-    if request.method == "POST":
-        user_input = request.form.get("user_input")
-        if user_input:
-            output = evaluate_input(user_input)
-    return render_template("index.html", output=output)
+    for i in range(5):
+        with cols[i]:
+            poster = fetch_poster(titles[i])
+            st.image(poster)
+            st.caption(titles[i])
 
-def evaluate_input(a):
-    print("valuating for : ", a)
-    return recommend(a)
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# app = Flask(__name__)
+
+# @app.route("/", methods=["GET", "POST"])
+# def index():
+#     output = None
+#     if request.method == "POST":
+#         user_input = request.form.get("user_input")
+#         if user_input:
+#             output = evaluate_input(user_input)
+#     return render_template("index.html", output=output)
+
+# def evaluate_input(a):
+#     print("valuating for : ", a)
+#     return recommend(a)
+
+# if __name__ == "__main__":
+#     app.run(debug=True)
