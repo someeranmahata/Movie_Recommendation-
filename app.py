@@ -31,16 +31,21 @@ def stem(text):
     return " ".join(y)
 
 def fetch_poster(movie_title):
-    url = f"https://api.themoviedb.org/3/search/movie?api_key={api_key}&query={movie_title}"
-    response = requests.get(url)
-    data = response.json()
-    
-    if data['results']:
-        poster_path = data['results'][0]['poster_path']
-        full_path = "https://image.tmdb.org/t/p/w500" + poster_path
-        return full_path
-    else:
+    try:
+        url = f"https://api.themoviedb.org/3/search/movie?api_key={api_key}&query={movie_title}"
+        response = requests.get(url)
+        data = response.json()
+
+        if "results" in data and len(data["results"]) > 0:
+            poster_path = data["results"][0].get("poster_path")
+            if poster_path:
+                return "https://image.tmdb.org/t/p/w500" + poster_path
+
         return "https://via.placeholder.com/500x750?text=Poster+Not+Found"
+
+    except:
+        return "https://via.placeholder.com/500x750?text=Error"
+
 
 def recommend(query, top_n=5):
     query = query.lower()
