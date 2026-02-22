@@ -13,7 +13,7 @@ import streamlit as st
 
 # DATA
 load_dotenv()
-api_key = "ff526b0160e62f1c6091c7428704fed5"
+api_key = "94a6e1ebbfccbef37f66b780d84f47d7"
 cv = CountVectorizer(max_features = 5000, stop_words = 'english')
 mov = pickle.load(open("movies_details.pkl", "rb"))
 movies = pd.DataFrame(mov)
