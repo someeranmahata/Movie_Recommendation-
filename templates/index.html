@@ -2,42 +2,49 @@
 <html>
 <head>
     <title>Movie Recommendation</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" 
+    href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
 <h1>Movie Recommendation System</h1>
 
-<form method="POST">
+    <form method="POST" class="search-form">
 
-    <input
-        type="text"
-        name="movie"
-        placeholder="Enter Movie, Actor or Director"
-        required
-    >
+        <input
+            type="text"
+            name="user_input"
+            class="search-input"
+            placeholder="Enter Movie, Actor or Director"
+            required
+        >
 
-    <button type="submit">
-        Recommend
-    </button>
+        <button type="submit" class="recommend-btn">
+            Recommend
+        </button>
 
-</form>
+    </form>
 
-<div class="movies">
+    <div class="recommendation-container">
 
-    {% for movie in recommendations %}
+        {% for movie in recommendations %}
 
-        <div class="card">
+        <div class="movie-card">
 
-            <img src="{{ movie.poster }}" alt="Poster">
+            <img
+                src="{{ movie.poster }}"
+                alt="{{ movie.title }}"
+                class="movie-poster"
+            >
 
-            <h3>{{ movie.title }}</h3>
+            <h3 class="movie-title">
+                {{ movie.title }}
+            </h3>
 
         </div>
 
-    {% endfor %}
+        {% endfor %}
 
-</div>
-
+    </div>
 </body>
 </html>
