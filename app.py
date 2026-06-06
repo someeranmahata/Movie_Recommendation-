@@ -10,10 +10,13 @@ import requests
 from dotenv import load_dotenv
 from flask import Flask, render_template, request
 import streamlit as st
-
+import os
 # DATA
 load_dotenv()
-api_key = "94a6e1ebbfccbef37f66b780d84f47d7"
+
+api_key = os.getenv("TMDB_API_KEY")
+
+
 cv = CountVectorizer(max_features = 5000, stop_words = 'english')
 mov = pickle.load(open("movies_details.pkl", "rb"))
 movies = pd.DataFrame(mov)
@@ -35,6 +38,9 @@ def fetch_poster(movie_title):
         url = f"https://api.themoviedb.org/3/search/movie?api_key={api_key}&query={movie_title}"
         response = requests.get(url)
         data = response.json()
+        
+        print("STATUS:", response.status_code)
+        print(response.text[:300])
 
         if "results" in data and len(data["results"]) > 0:
             poster_path = data["results"][0].get("poster_path")
