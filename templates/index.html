@@ -18,6 +18,36 @@
             placeholder="Enter Movie, Actor or Director"
             required
         >
+        <div class="search-options">
+
+        <label>
+            <input
+                type="radio"
+                name="search_type"
+                value="movie"
+                checked
+            >
+            Movie Name
+        </label>
+
+        <label>
+            <input
+                type="radio"
+                name="search_type"
+                value="actor"
+            >
+            Actor Name
+        </label>
+
+    </div>
+
+    <input
+        type="number"
+        name="count"
+        value="5"
+        min="1"
+        max="20"
+    >
 
         <button type="submit" class="recommend-btn">
             Recommend
