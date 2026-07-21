@@ -1,5 +1,4 @@
 import pickle
-import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
 from nltk.stem.porter import PorterStemmer
@@ -7,24 +6,25 @@ import os
 import requests
 from dotenv import load_dotenv
 from flask import Flask, render_template, request
-import os
-# DATA
+import pandas as pd
+
 load_dotenv()
 
 api_key = os.getenv("TMDB_API_KEY")
 
+cv = CountVectorizer(max_features=5000, stop_words='english')
 
-cv = CountVectorizer(max_features = 5000, stop_words = 'english')
 mov = pickle.load(open("movies_details.pkl", "rb"))
-# mov = pickle.load(open("movie_list.pkl", "rb"))
+movie_list = pickle.load(open("movie_list.pkl", "rb"))
+similarity = pickle.load(open("similarity.pkl", "rb"))
 
 movies = pd.DataFrame(mov)
-
+movies2 = pd.DataFrame(movie_list)
 
 vectors = cv.fit_transform(movies['tags']).toarray()
 
-# # methods
 ps = PorterStemmer()
+
 def stem(text):
     y = []
     for i in text.split():
@@ -36,7 +36,6 @@ def fetch_poster(movie_title):
         url = f"https://api.themoviedb.org/3/search/movie?api_key={api_key}&query={movie_title}"
         response = requests.get(url)
         data = response.json()
-
 
         if "results" in data and len(data["results"]) > 0:
             poster_path = data["results"][0].get("poster_path")
@@ -64,23 +63,17 @@ def recommend(query, top_n=5):
             "title": title,
             "poster": fetch_poster(title)
         })
+
     return results
 
 
-def recommend2(movie,n = 5):
-    mov = pickle.load(open('movie_list.pkl','rb'))
-    similarity = pickle.load(open('similarity.pkl','rb'))
-    
-    movies = pd.DataFrame(mov)
+def recommend2(movie, n=5):
 
-    vectors = cv.fit_transform(movies['tags']).toarray()
-    
-    matches = movies[
-        movies["title"].str.contains(movie, case=False, na=False)
+    matches = movies2[
+        movies2["title"].str.contains(movie, case=False, na=False)
     ]
 
     if matches.empty:
-        print(f"Movie '{movie}' not found")
         return []
 
     idx = matches.index[0]
@@ -95,13 +88,13 @@ def recommend2(movie,n = 5):
 
     for i in distances[1:n + 1]:
 
-        title = movies.iloc[i[0]]["title"]
+        title = movies2.iloc[i[0]]["title"]
 
         recommendations.append({
             "title": title,
             "poster": fetch_poster(title)
         })
-    
+
     return recommendations
 
 
@@ -109,16 +102,12 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    query = request.form.get("user_input")
-    search_type = request.form.get("search_type")
-    count = int(request.form.get("count", 5))
     recommendations = []
-    
-    print(query)
-    print(search_type)
-    print(count)
-    
+
     if request.method == "POST":
+        query = request.form.get("user_input")
+        search_type = request.form.get("search_type")
+        count = int(request.form.get("count", 5))
 
         if query:
             if search_type == "actor":
@@ -134,35 +123,3 @@ def index():
 
 if __name__ == "__main__":
     app.run(debug=True)
-    
-    
-# recommend("DanielRadcliffe")
-
-
-# # taking input
-
-# import streamlit as st
-# st.title('MOVIES RECOMMENDATION')
-# st.text("(You can mention any Movie/Actors or Directors)")
-
-# select_input = st.text_input("Enter the type of movie you want to watch : ")
-# st.text("NOTE : if you are mentioning actors name write it wthout space saperated")
-
-# if st.button("Recommend"):
-#     titles = recommend(select_input)
-
-#     col1, col2, col3, col4, col5 = st.columns(5)
-#     cols = [col1, col2, col3, col4, col5]
-
-#     for i in range(5):
-#         with cols[i]:
-#             poster = fetch_poster(titles[i])
-#             st.image(poster)
-#             st.caption(titles[i])
-
-
-
-# while(True):
-#     name = input("Enter name:")
-#     recommend(name)
-
