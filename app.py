@@ -16,12 +16,11 @@ cv = CountVectorizer(max_features=5000, stop_words='english')
 
 mov = pickle.load(open("movies_details.pkl", "rb"))
 movie_list = pickle.load(open("movie_list.pkl", "rb"))
-similarity = pickle.load(open("similarity.pkl", "rb"))
 
 movies = pd.DataFrame(mov)
 movies2 = pd.DataFrame(movie_list)
 
-vectors = cv.fit_transform(movies['tags']).toarray()
+vectors = cv.fit_transform(movies['tags'])
 
 ps = PorterStemmer()
 
@@ -51,9 +50,13 @@ def fetch_poster(movie_title):
 def recommend(query, top_n=5):
     query = query.lower()
     user_ch = stem(query)
+
     data = cv.transform([user_ch])
+
     sim = cosine_similarity(data, vectors).flatten()
+
     top_indices = sim.argsort()[-top_n:][::-1]
+
     results = []
 
     for idx in top_indices:
@@ -78,15 +81,20 @@ def recommend2(movie, n=5):
 
     idx = matches.index[0]
 
-    distances = sorted(
-        list(enumerate(similarity[idx])),
+    distances = cosine_similarity(
+        vectors[idx],
+        vectors
+    ).flatten()
+
+    movie_list = sorted(
+        list(enumerate(distances)),
         key=lambda x: x[1],
         reverse=True
     )
 
     recommendations = []
 
-    for i in distances[1:n + 1]:
+    for i in movie_list[1:n + 1]:
 
         title = movies2.iloc[i[0]]["title"]
 
@@ -102,14 +110,17 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+
     recommendations = []
 
     if request.method == "POST":
+
         query = request.form.get("user_input")
         search_type = request.form.get("search_type")
         count = int(request.form.get("count", 5))
 
         if query:
+
             if search_type == "actor":
                 recommendations = recommend(query, count)
 
@@ -120,6 +131,7 @@ def index():
         "index.html",
         recommendations=recommendations
     )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
